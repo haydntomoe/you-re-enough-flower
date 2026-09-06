@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>You're Enough 🌸</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #f7faf5;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.message {
+    position: fixed;
+    left: 50%;
+    bottom: 6vh;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: "Caveat", cursive;
+    color: #191414;
+    opacity: 0;
+    transition: opacity 2s ease;
+    pointer-events: none;
+}
+
+.message.show {
+    opacity: 1;
+}
+
+.message .line {
+    font-size: clamp(34px, 8vw, 52px);
+    line-height: .8;
+}
+
+.message .heart {
+    font-size: 27px;
+    margin-left: 4px;
+}
+
+.underline {
+    width: 190px;
+    height: 18px;
+    margin: 2px auto 0;
+    border-bottom: 3px solid #191414;
+    border-radius: 50%;
+    transform: rotate(-4deg);
+}
+
+.doodle {
+    position: fixed;
+    left: calc(50% + min(30vw, 180px));
+    top: 43%;
+    font-family: "Caveat", cursive;
+    font-size: clamp(38px, 9vw, 60px);
+    color: #191414;
+    transform: rotate(-7deg);
+    opacity: 0;
+    transition: opacity 1.5s ease;
+}
+
+.doodle.show {
+    opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="doodle" id="doodle">&lt;33</div>
+
+<div class="message" id="message">
+    <div class="line">you're</div>
+    <div class="line">enough <span class="heart">♡</span></div>
+    <div class="underline"></div>
+</div>
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const message = document.getElementById("message");
+const doodle = document.getElementById("doodle");
+
+let W, H;
+let particles = [];
+
+let startTime = 0;
+
+const PARTICLE_GAP = 3;
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+function resize() {
+
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+
+    ctx.setTransform(
+        devicePixelRatio,
+        0,
+        0,
+        devicePixelRatio,
+        0,
+        0
+    );
+
+    createFlower();
+}
+
+window.addEventListener("resize", resize);
+
+
+/* =====================================================
+   DRAW THE FINISHED FLOWER ON AN INVISIBLE CANVAS
+===================================================== */
+
+function createFlower() {
+
+    particles = [];
+
+    const flowerCanvas =
+        document.createElement("canvas");
+
+    flowerCanvas.width = W;
+    flowerCanvas.height = H;
+
+    const f =
+        flowerCanvas.getContext("2d");
+
+    const scale =
+        Math.min(
+            W / 500,
+            H / 720
+        );
+
+    const cx = W / 2;
+
+    /*
+       Flower is positioned slightly
+       above the middle.
+    */
+
+    const cy =
+        H / 2 - 145;
+
+
+    f.save();
+
+    f.translate(cx, cy);
+    f.scale(scale, scale);
+    f.translate(-250, -250);
+
+
+    /* =================================================
+       STEM
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(242, 390);
+
+    f.bezierCurveTo(
+        240, 470,
+        238, 560,
+        230, 700
+    );
+
+    f.lineTo(270, 700);
+
+    f.bezierCurveTo(
+        262, 560,
+        263, 470,
+        258, 390
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#55a943";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 7;
+    f.stroke();
+
+
+    /* =================================================
+       LEFT LEAF
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(245, 525);
+
+    f.bezierCurveTo(
+        200, 480,
+        125, 470,
+        58, 500
+    );
+
+    f.bezierCurveTo(
+        115, 548,
+        190, 555,
+        245, 530
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#5bb84b";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 7;
+    f.stroke();
+
+
+    /* =================================================
+       RIGHT LEAF
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(255, 480);
+
+    f.bezierCurveTo(
+        310, 435,
+        375, 435,
+        435, 460
+    );
+
+    f.bezierCurveTo(
+        380, 505,
+        310, 510,
+        255, 490
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#5bb84b";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 7;
+    f.stroke();
+
+
+    /* =================================================
+       LILY PETAL 1 — LEFT
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(250, 400);
+
+    f.bezierCurveTo(
+        185, 390,
+        110, 350,
+        82, 270
+    );
+
+    f.bezierCurveTo(
+        60, 200,
+        65, 105,
+        94, 65
+    );
+
+    f.bezierCurveTo(
+        145, 72,
+        195, 125,
+        218, 190
+    );
+
+    f.bezierCurveTo(
+        240, 255,
+        245, 340,
+        250, 400
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#f184a4";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 8;
+    f.stroke();
+
+
+    /* =================================================
+       PETAL 2 — LEFT INNER
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(250, 390);
+
+    f.bezierCurveTo(
+        205, 320,
+        165, 245,
+        165, 165
+    );
+
+    f.bezierCurveTo(
+        165, 105,
+        190, 55,
+        220, 45
+    );
+
+    f.bezierCurveTo(
+        255, 80,
+        270, 145,
+        260, 225
+    );
+
+    f.bezierCurveTo(
+        255, 290,
+        250, 345,
+        250, 390
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#f58aa9";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 8;
+    f.stroke();
+
+
+    /* =================================================
+       PETAL 3 — TOP CENTER
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(250, 330);
+
+    f.bezierCurveTo(
+        245, 250,
+        235, 160,
+        250, 75
+    );
+
+    f.bezierCurveTo(
+        260, 35,
+        290, 30,
+        305, 65
+    );
+
+    f.bezierCurveTo(
+        320, 120,
+        300, 200,
+        275, 275
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#f27f9f";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 8;
+    f.stroke();
+
+
+    /* =================================================
+       PETAL 4 — TOP RIGHT
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(255, 390);
+
+    f.bezierCurveTo(
+        265, 285,
+        275, 170,
+        315, 95
+    );
+
+    f.bezierCurveTo(
+        340, 48,
+        365, 45,
+        375, 70
+    );
+
+    f.bezierCurveTo(
+        380, 135,
+        350, 220,
+        315, 285
+    );
+
+    f.bezierCurveTo(
+        290, 330,
+        270, 370,
+        255, 390
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#ef7d9e";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 8;
+    f.stroke();
+
+
+    /* =================================================
+       PETAL 5 — RIGHT
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(255, 400);
+
+    f.bezierCurveTo(
+        315, 385,
+        360, 320,
+        380, 240
+    );
+
+    f.bezierCurveTo(
+        400, 165,
+        385, 90,
+        355, 62
+    );
+
+    f.bezierCurveTo(
+        315, 85,
+        280, 135,
+        265, 195
+    );
+
+    f.bezierCurveTo(
+        250, 270,
+        250, 340,
+        255, 400
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#f083a3";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 8;
+    f.stroke();
+
+
+    /* =================================================
+       PETAL 6 — FRONT
+    ================================================= */
+
+    f.beginPath();
+
+    f.moveTo(250, 400);
+
+    f.bezierCurveTo(
+        275, 350,
+        325, 300,
+        335, 230
+    );
+
+    f.bezierCurveTo(
+        345, 160,
+        335, 100,
+        315, 70
+    );
+
+    f.bezierCurveTo(
+        280, 105,
+        260, 155,
+        255, 215
+    );
+
+    f.bezierCurveTo(
+        245, 285,
+        242, 350,
+        250, 400
+    );
+
+    f.closePath();
+
+    f.fillStyle = "#f58baa";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 8;
+    f.stroke();
+
+
+    /* =================================================
+       SKETCH LINES ON PETALS
+    ================================================= */
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 5;
+    f.lineCap = "round";
+    f.lineJoin = "round";
+
+
+    f.beginPath();
+
+    f.moveTo(95, 90);
+
+    f.bezierCurveTo(
+        135, 125,
+        165, 155,
+        215, 180
+    );
+
+    f.stroke();
+
+
+    f.beginPath();
+
+    f.moveTo(120, 205);
+
+    f.bezierCurveTo(
+        160, 220,
+        195, 235,
+        225, 270
+    );
+
+    f.stroke();
+
+
+    f.beginPath();
+
+    f.moveTo(215, 55);
+
+    f.bezierCurveTo(
+        235, 100,
+        250, 145,
+        255, 195
+    );
+
+    f.stroke();
+
+
+    f.beginPath();
+
+    f.moveTo(355, 70);
+
+    f.bezierCurveTo(
+        330, 120,
+        315, 175,
+        300, 235
+    );
+
+    f.stroke();
+
+
+    /* =================================================
+       CENTER OF FLOWER
+    ================================================= */
+
+    f.beginPath();
+
+    f.ellipse(
+        250,
+        390,
+        31,
+        19,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    f.fillStyle = "#f2a0b7";
+    f.fill();
+
+    f.strokeStyle = "#111";
+    f.lineWidth = 6;
+    f.stroke();
+
+
+    f.restore();
+
+
+    /* =================================================
+       TURN THE FLOWER INTO PARTICLES
+    ================================================= */
+
+    const pixels =
+        f.getImageData(
+            0,
+            0,
+            W,
+            H
+        );
+
+    const data = pixels.data;
+
+
+    /*
+       Every particle comes from an
+       ACTUAL pixel of the flower.
+    */
+
+    for (
+        let y = 0;
+        y < H;
+        y += PARTICLE_GAP
+    ) {
+
+        for (
+            let x = 0;
+            x < W;
+            x += PARTICLE_GAP
+        ) {
+
+            const index =
+                (y * W + x) * 4;
+
+            const alpha =
+                data[index + 3];
+
+            if (alpha > 120) {
+
+                particles.push({
+
+                    /* Starting position */
+
+                    x:
+                        Math.random() * W,
+
+                    y:
+                        Math.random() * H,
+
+                    /* Destination */
+
+                    tx: x,
+                    ty: y,
+
+                    /* Original color */
+
+                    r: data[index],
+                    g: data[index + 1],
+                    b: data[index + 2],
+
+                    size:
+                        Math.random() * 1.4 + .8,
+
+                    delay:
+                        Math.random() * 1800,
+
+                    angle:
+                        Math.random() *
+                        Math.PI * 2
+                });
+            }
+        }
+    }
+
+    startTime =
+        performance.now();
+
+    message.classList.remove("show");
+    doodle.classList.remove("show");
+}
+
+
+/* =====================================================
+   PARTICLE ANIMATION
+===================================================== */
+
+function animate(time) {
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+    const elapsed =
+        time - startTime;
+
+
+    for (const p of particles) {
+
+        /*
+           Individual particles begin
+           at slightly different times.
+        */
+
+        const progress =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    (elapsed - p.delay) /
+                    3000
+                )
+            );
+
+
+        /*
+           Smooth easing.
+        */
+
+        const ease =
+            progress *
+            progress *
+            (3 - 2 * progress);
+
+
+        /*
+           Particles swirl while
+           travelling toward the flower.
+        */
+
+        const swirl =
+            Math.sin(
+                progress *
+                Math.PI *
+                5 +
+                p.angle
+            ) *
+            55 *
+            (1 - progress);
+
+
+        const x =
+            p.x +
+            (p.tx - p.x) *
+            ease +
+            swirl;
+
+
+        const y =
+            p.y +
+            (p.ty - p.y) *
+            ease;
+
+
+        /*
+           They become more solid
+           as they arrive.
+        */
+
+        const alpha =
+            Math.min(
+                1,
+                .15 +
+                progress * .85
+            );
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+
+        /*
+           EXACT COLOR of destination.
+        */
+
+        ctx.fillStyle =
+            `rgba(
+                ${p.r},
+                ${p.g},
+                ${p.b},
+                ${alpha}
+            )`;
+
+
+        ctx.shadowBlur = 3;
+
+        ctx.shadowColor =
+            `rgb(
+                ${p.r},
+                ${p.g},
+                ${p.b}
+            )`;
+
+
+        ctx.fill();
+    }
+
+
+    /*
+       Show the message after the
+       flower has formed.
+    */
+
+    if (
+        elapsed > 5000
+    ) {
+
+        message.classList.add("show");
+
+        doodle.classList.add("show");
+    }
+
+
+    requestAnimationFrame(animate);
+}
+
+
+/* =====================================================
+   TAP TO RESTART
+===================================================== */
+
+canvas.addEventListener(
+    "click",
+    () => {
+
+        createFlower();
+
+    }
+);
+
+
+resize();
+
+requestAnimationFrame(animate);
+
+</script>
+
+</body>
+</html>
